@@ -88,12 +88,12 @@ ip = sys.argv[1]
 port = int(sys.argv[2])
 
 # Create an echo server.
-server = EchoServer()
+# server = EchoServer()
 
 # If you want to be an egomaniac, comment out the above command, and uncomment the
 # one below...
-#server = EgoServer()
+# server = EgoServer()
 
 # Start server
-server.start(ip, port)
+# server.start(ip, port)
 
