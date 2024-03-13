@@ -35,6 +35,14 @@ class MyServer(Server):
                 else:
                     socket.send("Invalid command format. Please provide a single-word screen name.\n".encode())
 
+
+            # Help 
+            elif command.lower() == "help":
+                help = "Invalid command. Please use 'help' without any parameter.\n"
+                socket.send(help.encode())
+                    
+
+
             # Message
             elif command.lower() == "message":
                 if parameters.strip():
@@ -46,6 +54,29 @@ class MyServer(Server):
                         socket.send("You need to register a screen name before sending messages.\n".encode())
                 else:
                     socket.send("Please try the message command again but with a message.\n".encode())
+
+            # Direct Message
+            elif command.lower() == "dm":
+                if parameters.strip():
+                    dm_parts = parameters.strip().split(' ', 1)
+                    if len(dm_parts) == 2:
+                        target_user = dm_parts[0]
+                        dm_message = dm_parts[1]
+                        if socket in self.registered_users:
+                            sender_name = self.registered_users[socket]
+                            if target_user in self.registered_users.values():
+                                message_to_send = f"DM from {sender_name}: {dm_message}\n"
+                                dm_sent = f"DM to {target_user}: {dm_message}\n"
+                                self.send_dm(target_user, message_to_send.encode())
+                                self.send_dm(sender_name, dm_sent.encode())
+                            else:
+                                socket.send(f"No user registered with the name '{target_user}'.\n".encode())
+                        else:
+                            socket.send("You need to register a screen name before sending direct messages.\n".encode())
+                    else:
+                        socket.send("Invalid command format. Please provide a user name or a message.\n".encode())
+                else:
+                    socket.send("Please try the dm command again but with a message.\n".encode())
 
             # List
             elif command.lower() == "list":
@@ -59,7 +90,7 @@ class MyServer(Server):
                     else:
                         socket.send("No registered users.\n".encode())
             else:
-                print("Invalid command:", command)
+                socket.send("Invalid command. Type 'help' for a list of available commands.\n".encode())
         else:
             # Handling the case when no command is provided
             if not parts:
@@ -77,8 +108,18 @@ class MyServer(Server):
                         socket.send(f"Registered users: {user_list_str}\n".encode())
                     else:
                         socket.send("No registered users.\n".encode())
+                elif message_content.lower() == "help":
+                    help_message = """
+                    Available commands:
+                    - register [screen_name]: Register a screen name.
+                    - message [message]: Send a message to all registered users.
+                    - dm [username] [message]: Send a direct message to a specific user.
+                    - list: List all registered users.
+                    - help: Display available commands and their usage.
+                    """
+                    socket.send(help_message.encode())
                 else:
-                    error_message = "Invalid message format. Please try the message command again but with a message.\n"
+                    error_message = "Invalid command. Type 'help' for a list of available commands.\n"
                     socket.send(error_message.encode())
 
         return True
@@ -103,6 +144,13 @@ class MyServer(Server):
     def broadcast_message(self, message):
         for client_socket in self.connections:
             client_socket.send(message)
+
+    def send_dm(self, target_user, message):
+        for client_socket, screen_name in self.registered_users.items():
+            if screen_name == target_user:
+                client_socket.send(message)
+                return
+        print(f"User '{target_user}' not found for DM.")
 
 ip = sys.argv[1]
 port = int(sys.argv[2])
