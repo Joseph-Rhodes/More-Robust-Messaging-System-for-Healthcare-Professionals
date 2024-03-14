@@ -138,9 +138,6 @@ class MyServer(Server):
 
         print(message.decode())
 
-        for client_socket in self.connections:
-            client_socket.send(message)
-
     def broadcast_message(self, message):
         for client_socket in self.connections:
             client_socket.send(message)
