@@ -86,9 +86,9 @@ class MyServer(Server):
                     user_list = [screen_name for screen_name in self.registered_users.values()]
                     if user_list:
                         user_list_str = ', '.join(user_list)
-                        socket.send(f"Registered users: {user_list_str}\n".encode())
+                        socket.send(f"Registered Clients: {user_list_str}\n".encode())
                     else:
-                        socket.send("No registered users.\n".encode())
+                        socket.send("No registered Clients.\n".encode())
             else:
                 socket.send("Invalid command. Type 'help' for a list of available commands.\n".encode())
         else:
@@ -119,7 +119,7 @@ class MyServer(Server):
                     """
                     socket.send(help_message.encode())
                 else:
-                    error_message = "Invalid command. Type 'help' for a list of available commands.\n"
+                    error_message = ".\n"
                     socket.send(error_message.encode())
 
         return True

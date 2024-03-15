@@ -5,7 +5,7 @@ import sys
 class ChatGUI:
     def __init__(self, master, ip, port):
         self.master = master
-        master.title("Simple Chat System")
+        master.title("Messaging System")
 
         self.message_label = tk.Label(master, text="Welcome to the messaging system for healthcare professionals!", justify='left', anchor='w')
         self.message_label.pack(fill='both', expand=True)
